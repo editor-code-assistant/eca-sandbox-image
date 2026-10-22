@@ -1,12 +1,12 @@
 name: Build and publish docker image
 
+# No `schedule` on purpose: GitHub disables scheduled workflows of public repos
+# after 60 days without commits. Every ECA release pushes a commit bumping
+# ECA_VERSION in the Dockerfile, which triggers this workflow.
 on:
   push:
     branches:
       - master
-  schedule:
-    # Weekly rebuild to pick up new ECA releases and base image updates.
-    - cron: "0 6 * * 1"
   workflow_dispatch:
 
 jobs:
@@ -19,10 +19,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get latest ECA release version
+      - name: Get pinned ECA version
         id: eca
         run: |
-          version=$(curl -fsSL https://api.github.com/repos/editor-code-assistant/eca/releases/latest | jq -r .tag_name)
+          version=$(sed -n 's/^ARG ECA_VERSION=//p' Dockerfile)
+          if [ -z "$version" ] || [ "$version" = "latest" ]; then
+            echo "::error::Dockerfile must pin ARG ECA_VERSION to an ECA release, got '$version'"
+            exit 1
+          fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Set up QEMU
@@ -44,8 +48,6 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          build-args: |
-            ECA_VERSION=${{ steps.eca.outputs.version }}
           tags: |
             ghcr.io/${{ github.repository }}:latest
             ghcr.io/${{ github.repository }}:${{ steps.eca.outputs.version }}

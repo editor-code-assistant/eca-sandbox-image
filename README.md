@@ -4,7 +4,7 @@ Docker image to run the [ECA](https://github.com/editor-code-assistant/eca) serv
 
 Contains the `eca` binary plus a minimal toolset for agents (git, curl, ripgrep, unzip) on a Debian slim base.
 
-Published for `linux/amd64` and `linux/arm64` as `ghcr.io/editor-code-assistant/eca-sandbox-image`, tagged with `latest` and the bundled ECA version (e.g. `0.152.0`). Rebuilt weekly to track new ECA releases.
+Published for `linux/amd64` and `linux/arm64` as `ghcr.io/editor-code-assistant/eca-sandbox-image`, tagged with `latest` and the bundled ECA version (e.g. `0.152.0`). Rebuilt automatically on every ECA release.
 
 ## Usage
 
@@ -34,6 +34,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm
 
 ```bash
 make
-# or pinning a specific ECA version:
+# builds the ECA version pinned in the Dockerfile, or pick another one:
 docker build --build-arg ECA_VERSION=0.152.0 -t eca/eca-sandbox-image .
 ```
