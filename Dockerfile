@@ -3,7 +3,7 @@ FROM debian:stable-slim
 ARG TARGETARCH
 # Bumped automatically on every ECA release by eca's bump_downstreams workflow,
 # pushing that commit is what triggers a new image build.
-ARG ECA_VERSION=0.170.5
+ARG ECA_VERSION=0.170.6
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
